@@ -1,4 +1,4 @@
-# AEP 2° Semestre
+# ATIVIDADE DE ESTUDO PROGRAMADO (AEP)
 
 ## PSE em Ação: Promoção da Saúde Mental no Ambiente Escolar
 
