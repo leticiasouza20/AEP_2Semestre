@@ -2,7 +2,7 @@
 
 ### 👩‍💻 Estudantes
 
-- **Ana Vitória de Vergennes** — RA: 
+- **Ana Vitória de Vergennes** — RA: 26004362-2
 - **Leticia Rego de Souza** — RA: 26000282-2
 
 ### 🎓 Informações do Curso
