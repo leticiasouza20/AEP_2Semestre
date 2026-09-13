@@ -1,4 +1,4 @@
-## RacingGestor: Sistema de Gestão do Campeonato de Fórmula 1
+## PSE EM AÇÃO: Promoção da saúde mental no ambiente escolar
 
 ### 👩‍💻 Estudantes
 
