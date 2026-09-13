@@ -3,8 +3,6 @@
 ### 👩‍💻 Estudantes
 
 - **Ana Vitória de Vergennes** — RA: 26004362-2
-- **Arthur Volpato Moreira** — RA: 26004378-2
-- **João Vitor de Moraes Gôngora** — RA: 26003960-2
 - **Leticia Rego de Souza** — RA: 26000282-2
 
 ### 🎓 Informações do Curso
