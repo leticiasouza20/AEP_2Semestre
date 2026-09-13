@@ -1,4 +1,4 @@
-## PSE EM AÇÃO: Promoção da saúde mental no ambiente escolar
+## PSE EM AÇÃO: Promoção da Saúde Mental no Ambiente Escolar
 
 ### 👩‍💻 Estudantes
 
