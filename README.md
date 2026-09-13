@@ -1,8 +1,10 @@
-## PSE em Ação: Promoção da Saúde Mental no Ambiente Escolar
+## RacingGestor: Sistema de Gestão do Campeonato de Fórmula 1
 
 ### 👩‍💻 Estudantes
 
 - **Ana Vitória de Vergennes** — RA: 26004362-2
+- **Arthur Volpato Moreira** — RA: 26004378-2
+- **João Vitor de Moraes Gôngora** — RA: 26003960-2
 - **Leticia Rego de Souza** — RA: 26000282-2
 
 ### 🎓 Informações do Curso
@@ -20,4 +22,4 @@
 - GitHub
 ### 📂 Projeto
 
-Este repositório contém os arquivos, códigos e documentos desenvolvidos durante a realização da AEP do 2º semestre.
+Este repositório contém os arquivos, códigos e documentos desenvolvidos durante a realização do trabalho.
