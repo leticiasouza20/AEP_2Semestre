@@ -125,7 +125,7 @@ int main() {
                     printf("Nenhum encontro disponivel.\n");
                     break;
                 }
-                printf("Codigo do encontro (0 para voltar): ");
+                printf("Digite o codigo do encontro desejado ou 0 para voltar ao menu: ");
                 codigo = lerNumero();
                 if (codigo == 0) break;
                 posicao = -1;
