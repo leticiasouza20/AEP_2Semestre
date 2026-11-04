@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <limits.h>
+#include <ctype.h>
 
 #define LIMITE 50
 
@@ -42,20 +45,34 @@ void mostrarEncontro(struct Encontro e) {
 
 /* Evita que letras no lugar de numeros travem o menu. */
 int lerNumero() {
-    int numero;
-    int resultado;
-    int letra;
-    resultado = scanf("%d", &numero);
-    while ((letra = getchar()) != '\n' && letra != EOF) {
-        if (letra != ' ' && letra != '\t') resultado = 0;
-    }
-    if (resultado == EOF) {
-        return 0;
-    }
-    if (resultado != 1) {
+    char linha[128], *fim;
+    long valor;
+    int c;
+    if (!fgets(linha, sizeof linha, stdin)) return INT_MIN;
+    if (!strchr(linha, '\n') && !feof(stdin)) {
+        while ((c = getchar()) != '\n' && c != EOF) {}
         return -1;
     }
-    return numero;
+    valor = strtol(linha, &fim, 10);
+    if (fim == linha) return -1;
+    while (isspace((unsigned char)*fim)) fim++;
+    if (*fim || valor <= INT_MIN || valor > INT_MAX) return -1;
+    return (int)valor;
+}
+
+int lerTexto(char *destino, size_t tamanho) {
+    int c;
+    size_t n;
+    if (!fgets(destino, (int)tamanho, stdin)) return 0;
+    n = strlen(destino);
+    if (n && destino[n-1] == '\n') destino[n-1] = 0;
+    else if (!feof(stdin)) {
+        while ((c = getchar()) != '\n' && c != EOF) {}
+        return 0;
+    }
+    for (n = 0; destino[n]; n++)
+        if (!isspace((unsigned char)destino[n])) return 1;
+    return 0;
 }
 
 int main() {
@@ -86,6 +103,7 @@ int main() {
         printf("0 - Sair\n");
         printf("Escolha uma opcao: ");
         opcao = lerNumero();
+        if (opcao == INT_MIN) { printf("\nFim da entrada. Sistema encerrado!\n"); break; }
 
         switch (opcao) {
 
@@ -125,7 +143,10 @@ int main() {
                     printf("Nenhum encontro disponivel.\n");
                     break;
                 }
-                printf("Digite o codigo do encontro desejado ou 0 para voltar ao menu: ");
+                printf("\n---------------------------------\n");
+                printf("0 - Voltar ao menu principal\n");
+                printf("---------------------------------\n");
+                printf("Digite o codigo do encontro desejado: ");
                 codigo = lerNumero();
                 if (codigo == 0) break;
                 posicao = -1;
@@ -187,7 +208,10 @@ int main() {
                             printf("Codigo: %d | %s\n", encontros[j].codigo, encontros[j].nome);
                     }
                 }
-                printf("Codigo para ver detalhes (0 para voltar): ");
+                printf("\n---------------------------------\n");
+                printf("0 - Voltar ao menu principal\n");
+                printf("---------------------------------\n");
+                printf("Digite o codigo para ver detalhes: ");
                 codigo = lerNumero();
                 if (codigo == 0) break;
                 encontrou = 0;
@@ -242,7 +266,10 @@ int main() {
                         }
                     }
                     if (encontrou == 1) {
-                        printf("Codigo para ver detalhes (0 para voltar): ");
+                        printf("\n---------------------------------\n");
+                        printf("0 - Voltar ao menu principal\n");
+                        printf("---------------------------------\n");
+                printf("Digite o codigo para ver detalhes: ");
                         codigo = lerNumero();
                         if (codigo == 0) break;
                         encontrou = 0;
@@ -277,7 +304,10 @@ int main() {
                             printf("Codigo: %d | %s\n", encontros[j].codigo, encontros[j].nome);
                     }
                 }
-                printf("Codigo para cancelar (0 para voltar): ");
+                printf("\n---------------------------------\n");
+                printf("0 - Voltar ao menu principal\n");
+                printf("---------------------------------\n");
+                printf("Digite o codigo para cancelar: ");
                 codigo = lerNumero();
                 if (codigo == 0) break;
                 jaInscrito = 0;
@@ -355,7 +385,7 @@ int main() {
                     }
                     i = totalEncontros;
                     encontros[i].codigo = totalEncontros + 1;
-                    printf("Nome: "); scanf(" %49[^\n]", encontros[i].nome);
+                    printf("Nome: "); if (!lerTexto(encontros[i].nome, sizeof encontros[i].nome)) { printf("Texto invalido!\n"); break; }
                     printf("Tema: 1 - Saude / 2 - Bullying / 3 - Autoestima / 4 - Ansiedade / 5 - Convivencia: ");
                     tema = lerNumero();
                     if (tema < 1 || tema > 5) {
@@ -367,10 +397,10 @@ int main() {
                     if (tema == 3) strcpy(encontros[i].tema, "Autoestima");
                     if (tema == 4) strcpy(encontros[i].tema, "Ansiedade");
                     if (tema == 5) strcpy(encontros[i].tema, "Convivencia");
-                    printf("Data: "); scanf(" %19[^\n]", encontros[i].data);
-                    printf("Horario: "); scanf(" %19[^\n]", encontros[i].horario);
-                    printf("Local: "); scanf(" %49[^\n]", encontros[i].local);
-                    printf("Responsavel: "); scanf(" %49[^\n]", encontros[i].responsavel);
+                    printf("Data: "); if (!lerTexto(encontros[i].data, sizeof encontros[i].data)) { printf("Texto invalido!\n"); break; }
+                    printf("Horario: "); if (!lerTexto(encontros[i].horario, sizeof encontros[i].horario)) { printf("Texto invalido!\n"); break; }
+                    printf("Local: "); if (!lerTexto(encontros[i].local, sizeof encontros[i].local)) { printf("Texto invalido!\n"); break; }
+                    printf("Responsavel: "); if (!lerTexto(encontros[i].responsavel, sizeof encontros[i].responsavel)) { printf("Texto invalido!\n"); break; }
                     printf("Numero de vagas: ");
                     encontros[i].vagas = lerNumero();
                     if (encontros[i].vagas <= 0) {
@@ -383,8 +413,10 @@ int main() {
                     totalEncontros++;
                     printf("Encontro cadastrado! Codigo: %d\n", encontros[i].codigo);
                 } else if (resposta == 2) {
-                    printf("Codigo do encontro para atualizar: ");
+                    printf("\n---------------------------------\n0 - Voltar ao menu principal\n---------------------------------\n");
+                printf("Codigo do encontro para atualizar: ");
                     codigo = lerNumero();
+                    if (codigo == 0) break;
                     posicao = -1;
                     for (i = 0; i < totalEncontros; i++) {
                         if (encontros[i].codigo == codigo) posicao = i;
@@ -404,30 +436,38 @@ int main() {
                         printf("Vagas invalidas! Nao pode ser menor que os inscritos.\n");
                         break;
                     }
-                    printf("Novo nome: "); scanf(" %49[^\n]", encontros[posicao].nome);
-                    printf("Novo tema: 1 - Saude / 2 - Bullying / 3 - Autoestima / 4 - Ansiedade / 5 - Convivencia: ");
-                    tema = lerNumero();
-                    if (tema < 1 || tema > 5) {
-                        printf("Tema invalido!\n");
-                        break;
+                    {
+                        struct Encontro novo = encontros[posicao];
+                        novo.vagas = vagasNovas;
+                        printf("Novo nome: ");
+                        if (!lerTexto(novo.nome, sizeof novo.nome)) { printf("Nome invalido!\n"); break; }
+                        printf("Novo tema: 1 - Saude / 2 - Bullying / 3 - Autoestima / 4 - Ansiedade / 5 - Convivencia: ");
+                        tema = lerNumero();
+                        if (tema < 1 || tema > 5) { printf("Tema invalido! Nenhum dado foi alterado.\n"); break; }
+                        if (tema == 1) strcpy(novo.tema, "Saude");
+                        if (tema == 2) strcpy(novo.tema, "Bullying");
+                        if (tema == 3) strcpy(novo.tema, "Autoestima");
+                        if (tema == 4) strcpy(novo.tema, "Ansiedade");
+                        if (tema == 5) strcpy(novo.tema, "Convivencia");
+                        printf("Nova data: ");
+                        if (!lerTexto(novo.data, sizeof novo.data)) { printf("Data invalida!\n"); break; }
+                        printf("Novo horario: ");
+                        if (!lerTexto(novo.horario, sizeof novo.horario)) { printf("Horario invalido!\n"); break; }
+                        printf("Novo local: ");
+                        if (!lerTexto(novo.local, sizeof novo.local)) { printf("Local invalido!\n"); break; }
+                        printf("Novo responsavel: ");
+                        if (!lerTexto(novo.responsavel, sizeof novo.responsavel)) { printf("Responsavel invalido!\n"); break; }
+                        encontros[posicao] = novo;
                     }
-                    if (tema == 1) strcpy(encontros[posicao].tema, "Saude");
-                    if (tema == 2) strcpy(encontros[posicao].tema, "Bullying");
-                    if (tema == 3) strcpy(encontros[posicao].tema, "Autoestima");
-                    if (tema == 4) strcpy(encontros[posicao].tema, "Ansiedade");
-                    if (tema == 5) strcpy(encontros[posicao].tema, "Convivencia");
-                    printf("Nova data: "); scanf(" %19[^\n]", encontros[posicao].data);
-                    printf("Novo horario: "); scanf(" %19[^\n]", encontros[posicao].horario);
-                    printf("Novo local: "); scanf(" %49[^\n]", encontros[posicao].local);
-                    printf("Novo responsavel: "); scanf(" %49[^\n]", encontros[posicao].responsavel);
-                    encontros[posicao].vagas = vagasNovas;
                     printf("Encontro atualizado com sucesso!\n");
                 } else printf("Opcao invalida!\n");
                 break;
 
             case 7:
+                printf("\n---------------------------------\n0 - Voltar ao menu principal\n---------------------------------\n");
                 printf("Codigo do encontro: ");
                 codigo = lerNumero();
+                if (codigo == 0) break;
                 posicao = -1;
                 for (i = 0; i < totalEncontros; i++) {
                     if (encontros[i].codigo == codigo) posicao = i;
@@ -451,8 +491,10 @@ int main() {
                 break;
 
             case 8:
+                printf("\n---------------------------------\n0 - Voltar ao menu principal\n---------------------------------\n");
                 printf("Codigo do encontro: ");
                 codigo = lerNumero();
+                if (codigo == 0) break;
                 posicao = -1;
                 for (i = 0; i < totalEncontros; i++) {
                     if (encontros[i].codigo == codigo) posicao = i;
