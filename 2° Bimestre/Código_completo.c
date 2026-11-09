@@ -4,8 +4,10 @@
 #include <limits.h>
 #include <ctype.h>
 
+/* Limite de encontros e inscricoes. */
 #define LIMITE 50
 
+/* Dados dos encontros. */
 struct Encontro {
     int codigo;
     char nome[50];
@@ -20,7 +22,7 @@ struct Encontro {
     int situacao; /* 1 planejado, 2 realizado, 3 cancelado */
 };
 
-/* Funcao simples para mostrar os dados de um encontro. */
+/* Exibicao dos dados do encontro. */
 void mostrarEncontro(struct Encontro e) {
     printf("\nCodigo: %d\n", e.codigo);
     printf("Nome: %s\n", e.nome);
@@ -43,7 +45,7 @@ void mostrarEncontro(struct Encontro e) {
     }
 }
 
-/* Evita que letras no lugar de numeros travem o menu. */
+/* Leitura e validacao de numeros. */
 int lerNumero() {
     char linha[128], *fim;
     long valor;
@@ -60,6 +62,7 @@ int lerNumero() {
     return (int)valor;
 }
 
+/* Leitura e validacao de textos. */
 int lerTexto(char *destino, size_t tamanho) {
     int c;
     size_t n;
@@ -76,6 +79,7 @@ int lerTexto(char *destino, size_t tamanho) {
 }
 
 int main() {
+    /* Encontros iniciais. */
     struct Encontro encontros[LIMITE] = {
         {1, "Saude emocional", "Saude", "A definir", "A definir", "Escola", "Equipe PSE", 30, 0, 0, 1},
         {2, "Combate ao bullying", "Bullying", "A definir", "A definir", "Escola", "Equipe PSE", 25, 0, 0, 1},
@@ -83,30 +87,72 @@ int main() {
         {4, "Controle da ansiedade", "Ansiedade", "A definir", "A definir", "Escola", "Equipe PSE", 30, 0, 0, 1},
         {5, "Convivencia escolar", "Convivencia", "A definir", "A definir", "Escola", "Equipe PSE", 40, 0, 0, 1}
     };
+    /* Controle de encontros e inscricoes. */
     int totalEncontros = 5;
     int minhasInscricoes[LIMITE] = {0};
     int totalInscricoes = 0;
-    int opcao = -1, resposta, codigo, i, j, posicao, encontrou, jaInscrito;
+    int opcao = -1, perfil = -1, escolha, resposta, codigo, i, j, posicao, encontrou, jaInscrito;
     int tema, filtro, novaSituacao, presentes, vagasNovas;
     int planejados, realizados, cancelados, somaInscritos, somaPresentes;
 
-    while (opcao != 0) {
-        printf("\n===== MENU PRINCIPAL - PSE EM ACAO =====\n");
-        printf("1 - Encontros disponiveis\n");
-        printf("2 - Meus encontros\n");
-        printf("3 - Pesquisar encontro\n");
-        printf("4 - Cancelar inscricao\n");
-        printf("5 - Relatorio\n");
-        printf("6 - Cadastrar ou atualizar encontro\n");
-        printf("7 - Atualizar situacao do encontro\n");
-        printf("8 - Registrar participantes\n");
+    /* Escolha do perfil. */
+    while (1) {
+        printf("\n===== SISTEMA PSE EM ACAO =====\n");
+        printf("1 - Participante\n");
+        printf("2 - Responsavel pelo PSE\n");
         printf("0 - Sair\n");
-        printf("Escolha uma opcao: ");
-        opcao = lerNumero();
-        if (opcao == INT_MIN) { printf("\nFim da entrada. Sistema encerrado!\n"); break; }
+        printf("Escolha seu tipo de acesso: ");
+        perfil = lerNumero();
+        if (perfil == INT_MIN || perfil == 0) {
+            printf("\nSistema encerrado!\n");
+            break;
+        }
+        if (perfil != 1 && perfil != 2) {
+            printf("Opcao invalida!\n");
+            continue;
+        }
 
+        /* Menu por perfil. */
+        while (1) {
+            if (perfil == 1) {
+                printf("\n===== MENU DO PARTICIPANTE =====\n");
+                printf("1 - Encontros disponiveis / Realizar inscricao\n");
+                printf("2 - Meus encontros\n");
+                printf("3 - Pesquisar encontro\n");
+                printf("4 - Cancelar inscricao\n");
+            } else {
+                printf("\n===== MENU DO RESPONSAVEL PELO PSE =====\n");
+                printf("1 - Cadastrar ou atualizar encontro\n");
+                printf("2 - Atualizar situacao do encontro\n");
+                printf("3 - Registrar participantes\n");
+                printf("4 - Gerar relatorio\n");
+            }
+            printf("0 - Voltar a escolha de usuario\n");
+            printf("Escolha uma opcao: ");
+            escolha = lerNumero();
+            if (escolha == INT_MIN) {
+                printf("\nFim da entrada. Sistema encerrado!\n");
+                return 0;
+            }
+            if (escolha == 0) break;
+            if (escolha < 1 || escolha > 4) {
+                printf("Opcao invalida!\n");
+                continue;
+            }
+
+            /* Opcoes de cada perfil. */
+            if (perfil == 1) opcao = escolha;
+            else {
+                if (escolha == 1) opcao = 6;
+                if (escolha == 2) opcao = 7;
+                if (escolha == 3) opcao = 8;
+                if (escolha == 4) opcao = 5;
+            }
+
+        /* Funcionalidades do sistema. */
         switch (opcao) {
 
+            /* Encontros disponiveis e inscricao. */
             case 1:
                 printf("\nDeseja escolher um tema? 1 - Sim / 2 - Nao: ");
                 resposta = lerNumero();
@@ -196,6 +242,7 @@ int main() {
                 else printf("Opcao invalida!\n");
                 break;
 
+            /* Meus encontros. */
             case 2:
                 if (totalInscricoes == 0) {
                     printf("Voce nao possui inscricoes.\n");
@@ -230,6 +277,7 @@ int main() {
                 }
                 break;
 
+            /* Pesquisa por codigo ou tema. */
             case 3:
                 printf("\nPesquisar por: 1 - Codigo / 2 - Tema: ");
                 filtro = lerNumero();
@@ -292,6 +340,7 @@ int main() {
                 }
                 break;
 
+            /* Cancelamento de inscricao. */
             case 4:
                 if (totalInscricoes == 0) {
                     printf("Voce nao possui inscricoes.\n");
@@ -348,6 +397,7 @@ int main() {
                 else printf("Opcao invalida!\n");
                 break;
 
+            /* Relatorio geral. */
             case 5:
                 planejados = 0;
                 realizados = 0;
@@ -375,6 +425,7 @@ int main() {
                 }
                 break;
 
+            /* Cadastro e atualizacao de encontros. */
             case 6:
                 printf("\n1 - Cadastrar encontro\n2 - Atualizar encontro\nEscolha: ");
                 resposta = lerNumero();
@@ -437,6 +488,7 @@ int main() {
                         break;
                     }
                     {
+                        /* Validacao antes de salvar. */
                         struct Encontro novo = encontros[posicao];
                         novo.vagas = vagasNovas;
                         printf("Novo nome: ");
@@ -463,6 +515,7 @@ int main() {
                 } else printf("Opcao invalida!\n");
                 break;
 
+            /* Atualizacao da situacao. */
             case 7:
                 printf("\n---------------------------------\n0 - Voltar ao menu principal\n---------------------------------\n");
                 printf("Codigo do encontro: ");
@@ -490,6 +543,7 @@ int main() {
                 printf("Situacao atualizada com sucesso!\n");
                 break;
 
+            /* Registro de participantes presentes. */
             case 8:
                 printf("\n---------------------------------\n0 - Voltar ao menu principal\n---------------------------------\n");
                 printf("Codigo do encontro: ");
@@ -518,11 +572,13 @@ int main() {
                 }
                 break;
 
+            /* Encerrar programa. */
             case 0:
                 printf("\nSistema encerrado!\n");
                 break;
             default:
                 printf("\nOpcao invalida!\n");
+        }
         }
     }
     return 0;
